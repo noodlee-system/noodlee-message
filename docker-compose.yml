@@ -1,0 +1,37 @@
+version: "3.5"
+
+services:
+  template-service_api:
+    container_name: template-service_api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: template-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - template-service_database
+    networks:
+      - noodlee-system-network
+
+  template-service_database:
+    container_name: template-service_database
+    image: postgres:9.6
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PdgDNLnlrr3NgshqwKJA
+      POSTGRES_DB: template_db
+    volumes:
+      - template-service_database-volume:/var/lib/postgresql/data
+    networks:
+      - noodlee-system-network
+
+networks:
+  noodlee-system-network:
+    name: noodlee-system-network
+    driver: bridge
+    
+volumes:
+  template-service_database-volume:
