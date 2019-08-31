@@ -1,4 +1,4 @@
-package com.noodleesystem.template.model;
+package com.noodleesystem.message.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

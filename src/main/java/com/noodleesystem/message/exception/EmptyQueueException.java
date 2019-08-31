@@ -1,4 +1,4 @@
-package com.noodleesystem.template.exception;
+package com.noodleesystem.message.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

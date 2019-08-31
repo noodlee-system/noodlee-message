@@ -1,4 +1,4 @@
-package com.noodleesystem.template.config;
+package com.noodleesystem.message.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.noodleesystem.template"))
+                .apis(RequestHandlerSelectors.basePackage("com.noodleesystem.message"))
                 .paths(PathSelectors.regex("/.*"))
                 .build()
                 .apiInfo(apiEndPointsInfo());
@@ -26,8 +26,8 @@ public class SwaggerConfig {
 
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder()
-                .title("Template Service REST API")
-                .description("Noodlee System Template Service REST API")
+                .title("Message Service REST API")
+                .description("Noodlee System Message Service REST API")
                 .contact(new Contact("NoodleeSystem", "www.noodleesystem.com", "contact@noodleesystem.com"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
