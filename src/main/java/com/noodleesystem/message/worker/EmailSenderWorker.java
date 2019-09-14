@@ -7,6 +7,7 @@ import com.noodleesystem.message.config.EmailClientConfig;
 import com.noodleesystem.message.model.Email;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import serilogj.Log;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -21,18 +22,19 @@ import java.util.Date;
 @Component
 public class EmailSenderWorker {
     private ObjectMapper mapper;
-    private EmailClientConfig config;
+    private static EmailClientConfig config;
 
-
-    public EmailSenderWorker() {
+    public EmailSenderWorker() throws IOException {
         this.mapper = new ObjectMapper();
-        config = new EmailClientConfig();
+        config = new EmailClientConfig("email_config.xml");
     }
 
     @RabbitListener(queues = "emails_queue")
     public void receive(String emailJsonString) {
         try {
             Email email = mapper.readValue(emailJsonString, Email.class);
+            Log.information("Email successfully parsed from JSON.");
+            send(email);
         } catch (JsonParseException e) {
             System.err.println("JSON parsing error while trying to parse Email.");
         } catch (JsonMappingException e) {
@@ -44,6 +46,7 @@ public class EmailSenderWorker {
 
     private void send(Email email){
         Session session = Session.getInstance(config.getProperties(), config.getAuthenticator());
+        Log.information("Email session successfully established.");
         prepareMimeAndSend(email, session);
     }
 
@@ -60,11 +63,11 @@ public class EmailSenderWorker {
             msg.setSentDate(new Date());
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email.getTo(), false));
             Transport.send(msg);
-
+            Log.information("Email successfully sent.");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            Log.warning("MessagingException while trying to send Email: %s", e.getMessage());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.warning("UnsupportedEncodingException while trying to send Email: %s", e.getMessage());
         }
     }
 }

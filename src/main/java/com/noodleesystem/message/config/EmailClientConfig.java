@@ -1,39 +1,93 @@
 package com.noodleesystem.message.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class EmailClientConfig {
-    private final String host;
-    private final String from;
-    private final String password;
+    private String host;
+    private String from;
+    private String login;
+    private String password;
     private int port;
     private boolean useAuth;
-    private boolean useStarttls;
+    private boolean useStartTLS;
+    @JsonIgnore
     private Properties properties;
+    @JsonIgnore
     private Authenticator authenticator;
 
-    public EmailClientConfig(){
-        host = "mail.thomas-it.pl";
-        from = "projektpp@thomas-it.pl";
-        password = "ppjestsuper1234";
-        port = 587;
-        useAuth = true;
-        useStarttls = true;
+    private EmailClientConfig() {
+    }
 
-        properties = new Properties();
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.auth", useAuth);
-        properties.put("mail.smtp.starttls.enable", useStarttls);
+    public EmailClientConfig(String filePath) throws IOException {
+        deserializeFromXML(filePath);
 
-        authenticator = new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, password);
-            }
-        };
+        createProperties();
+        createAuthenticator();
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isUseAuth() {
+        return useAuth;
+    }
+
+    public void setUseAuth(boolean useAuth) {
+        this.useAuth = useAuth;
+    }
+
+    public boolean isUseStartTLS() {
+        return useStartTLS;
+    }
+
+    public void setUseStartTLS(boolean useStartTLS) {
+        this.useStartTLS = useStartTLS;
     }
 
     public Properties getProperties() {
@@ -44,7 +98,40 @@ public class EmailClientConfig {
         return authenticator;
     }
 
-    public String getFrom() {
-        return from;
+    public void serializeToXML(String filePath) throws IOException {
+        XmlMapper xmlMapper = new XmlMapper();
+        xmlMapper.writeValue(new File(filePath), this);
+    }
+
+    private void deserializeFromXML(String filePath) throws IOException {
+        XmlMapper xmlMapper = new XmlMapper();
+        String content = new String(Files.readAllBytes(Paths.get(filePath)));
+
+        EmailClientConfig tempConfig = xmlMapper.readValue(content, EmailClientConfig.class);
+        this.host = tempConfig.host;
+        this.from = tempConfig.from;
+        this.login = tempConfig.login;
+        this.password = tempConfig.password;
+        this.port = tempConfig.port;
+        this.useAuth = tempConfig.useAuth;
+        this.useStartTLS = tempConfig.useStartTLS;
+        createProperties();
+    }
+
+    private void createProperties(){
+        properties = new Properties();
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", port);
+        properties.put("mail.smtp.auth", useAuth);
+        properties.put("mail.smtp.starttls.enable", useStartTLS);
+    }
+
+    private void createAuthenticator(){
+        authenticator = new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(login, password);
+            }
+        };
     }
 }
