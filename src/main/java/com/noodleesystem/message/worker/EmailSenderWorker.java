@@ -34,23 +34,24 @@ public class EmailSenderWorker {
         try {
             Email email = mapper.readValue(emailJsonString, Email.class);
             Log.information("Email successfully parsed from JSON.");
+            Log.information("Email: %s", emailJsonString);
             send(email);
         } catch (JsonParseException e) {
-            System.err.println("JSON parsing error while trying to parse Email.");
+            Log.warning("JSON parsing error while trying to parse Email: %s", e.getMessage());
         } catch (JsonMappingException e) {
-            System.err.println("JSON mapping error while trying to parse Email.");
+            Log.warning("JSON mapping error while trying to parse Email: %s", e.getMessage());
         } catch (IOException e) {
-            System.err.println("IOException while trying to parse Email.");
+            Log.warning("IOException while trying to parse Email: %s", e.getMessage());
         }
     }
 
-    private void send(Email email){
+    private void send(Email email) {
         Session session = Session.getInstance(config.getProperties(), config.getAuthenticator());
         Log.information("Email session successfully established.");
         prepareMimeAndSend(email, session);
     }
 
-    private void prepareMimeAndSend(Email email, Session session){
+    private void prepareMimeAndSend(Email email, Session session) {
         try {
             MimeMessage msg = new MimeMessage(session);
             msg.addHeader("Content-type", "text/HTML; charset=UTF-8");

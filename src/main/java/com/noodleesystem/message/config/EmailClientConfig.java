@@ -74,9 +74,7 @@ public class EmailClientConfig {
         this.port = port;
     }
 
-    public boolean isUseAuth() {
-        return useAuth;
-    }
+    public boolean isUseAuth() { return this.useAuth; }
 
     public void setUseAuth(boolean useAuth) {
         this.useAuth = useAuth;
@@ -115,10 +113,9 @@ public class EmailClientConfig {
         this.port = tempConfig.port;
         this.useAuth = tempConfig.useAuth;
         this.useStartTLS = tempConfig.useStartTLS;
-        createProperties();
     }
 
-    private void createProperties(){
+    private void createProperties() {
         properties = new Properties();
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
@@ -126,7 +123,7 @@ public class EmailClientConfig {
         properties.put("mail.smtp.starttls.enable", useStartTLS);
     }
 
-    private void createAuthenticator(){
+    private void createAuthenticator() {
         authenticator = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {

@@ -5,6 +5,7 @@ WORKDIR /home/app/
 
 COPY ./pom.xml ./pom.xml
 COPY ./settings.xml ./settings.xml
+COPY ./email_config.xml ./email_config.xml
 
 RUN mvn -s ./settings.xml dependency:go-offline -B 
 
